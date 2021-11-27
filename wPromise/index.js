@@ -21,9 +21,9 @@ class Promise{
         } else {
             this.callbacks.push(cb)
         }
+        return this;
     }
 
-    // 
     _resolve = (value) => {
         this.state = 'fullfilled';
         this.value = value;
