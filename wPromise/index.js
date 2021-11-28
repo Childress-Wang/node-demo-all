@@ -95,7 +95,7 @@
 // }
 
 // v3
-class Promise{
+class Promise {
     callbacks = [];
     // 共有三种状态 pendding, fullfilled, rejected,状态流向只能是pendding --> fullfilled,   pedding --> rejected
     state = 'pendding';
@@ -122,6 +122,16 @@ class Promise{
 
     catch = (onError) => {
         return this.then(null, onError);
+    }
+
+    finally  = (cb) => {
+        console.log('this.state', this.state)
+        if(this.state === 'pendding') {
+            this.callbacks.push(cb);
+        } else {
+            cb()
+        }
+        return this; 
     }
 
     _handle = (cb) => {
@@ -167,6 +177,71 @@ class Promise{
         this.state = 'rejected';
         this.value = error;
         this.callbacks.forEach(cb=>this._handle(cb));
+    }
+
+    static resolve(value){
+        if (value instanceof Promise) {
+            return value
+        } else if (value && typeof value === 'object' && typeof value.then === 'function') {
+            let then = value.then;
+            return new Promise((resolve, reject)=>{
+                then(resolve)
+            })
+        } else if (value) {
+            return new Promise(resolve => resolve(value) );
+        } else {
+            return new Promise(resolve => resolve());
+        }
+    }
+
+    static reject(value) {
+        if(value && typeof value === 'object' && typeof valule.then === 'function') {
+            let then = value.then;
+            return new Promise((resolve, reject)=>{
+                then(reject);
+            })
+        } else {
+            return new Promise((resolve, reject)=> reject());
+        }
+    }
+
+    static all(promiseArr) {
+        let resultArr = [];
+        return new Promise((resolve, reject) => {
+            promiseArr.forEach((promise, index)=>{
+                if (promise && typeof promise === 'object' && typeof promise.then === 'function') {
+                    promise.then(res=>{
+                        resultArr.push(res);
+                        if (resultArr.length === promiseArr.length) {
+                            resolve(resultArr);
+                        }
+                    }, err=> {
+                        reject(err);
+                    })
+                } else {
+                    resultArr.push(promise);
+                    if (resultArr.length === promiseArr.length) {
+                        resolve(resultArr);
+                    }
+                }
+            })
+        })
+    }
+    static race(promiseArr) {
+        let resultArr = [];
+        return new Promise((resolve, reject) => {
+            promiseArr.forEach((promise, index) => {
+                if (promise && typeof promise === 'object' && typeof promise.then === 'function') {
+                    promise.then(res => {
+                        resolve(resultArr);
+                    }, err => {
+                        reject(err)
+                    })
+                } else {
+                    resolve(promise);
+                }
+            })
+        })
     }
 }
 
