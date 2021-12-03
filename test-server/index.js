@@ -1,16 +1,7 @@
 const http = require('http');
-
+const {router} = require('./router')
 let server = http.createServer((req, res) => {
-    let data = '';
-    req.on('data', (chunk)=>{
-        data+=chunk;
-        console.log('chunk', chunk);
-        console.log('chunk.size', chunk.length);
-    });
-    req.on('end', () => {
-        console.log('data',data);
-        console.log('data.length',data);
-    })
+    router(req, res);
 });
 
 server.listen(3008, () => {

@@ -7,14 +7,15 @@
     <title>Document</title>
 </head>
 <body>
+    <div>hhahah</div>
     <script>
         let data = ''
-        for(let i = 0; i < 1460; i++) {
+        for(let i = 0; i < 65536 * 10; i++) {
             data += 'a';
         }
         let xhr = new XMLHttpRequest();
         xhr.open('POST', 'http://127.0.0.1:3008');
-        xhr.send('data')
+        xhr.send(data)
     </script>
 </body>
 </html>
